@@ -39,7 +39,7 @@ namespace Chess
             }
             Console.Write("Enter 'b' or 'B' to play as black, 'w' or 'W' to play as white, or anything else for a random color: ");
             input = Console.ReadLine().ToLower();
-            if (input == "" || (input[0] != 'b' && input[0] != 'w'))
+            if (input[0] != 'b' && input[0] != 'w')
             {
                 input = flipped ? "b" : "w";
                 Console.WriteLine("You have the " + (flipped ? "black" : "white") + " pieces.");
@@ -80,13 +80,14 @@ namespace Chess
                     while (true)
                     {
                         Console.Write("\nYour move: ");
-                        input = Console.ReadLine().Replace("x", null);
+                        input = Console.ReadLine().Replace("x", null); //remove the "x" symbol which indicates captures in algebraic notation
                         char promotionType = '\0';
                         if (input == "*info")
                         {
                             Console.WriteLine("Enter moves in algebraic chess notation (e.g. Ra4). Lowercase piece types are not allowed to prevent\n\t moves from being misinterpreted (for example, bxc4 is a pawn capture, Bxc4 is a bishop capture).");
                             Console.WriteLine("When capturing a piece, use of 'x' is allowed but not required (e.g. Bxd4).");
                             Console.WriteLine("You may enter a pawn move using only the ending square (e.g. d4).");
+                            Console.WriteLine("You may castle either using 'o-o' (kingside), 'o-o-o' (queenside), or a king move 2 squares to the left or right.");
                             Console.WriteLine("To distinguish between 2 pieces of the same type which can move to the same square, use either the rank (1-8)\n\tor file (a-h). For example, with a rook on a1 and one on h1, say either Rad1 or Rhd1 to move one to d1.");
                             Console.WriteLine("To promote a pawn to something other than a queen, append =[type] to the end of your input (e.g. f8=N).");
                             Console.WriteLine("Commands:");
@@ -146,11 +147,10 @@ namespace Chess
                 game.ActivePlayer = game.ActivePlayer == 0 ? 1 : 0;
             }
         }
-        /*
-        public static void Debug()
+        
+        /*public static void Debug()
         {
             Engine e = new();
-            e.Perft(4);
         }*/
 
         readonly Engine Engine;
@@ -204,8 +204,8 @@ namespace Chess
                 pieces = Engine.Pieces[type];
                 if (distinguisher >= '1' && distinguisher <= '8')
                 {
-                    int row = (int)distinguisher - '0';
-                    while (!Board.Contains(Engine.State.Moves[prev], next) || (prev / 8) + 1 != row)
+                    int row = (int)distinguisher - '1';
+                    while (!Board.Contains(Engine.State.Moves[prev], next) || (prev / 8) != row)
                     {
                         prev = BitOperations.TrailingZeroCount(pieces);
                         pieces &= ~(UL1 << prev);
@@ -215,7 +215,7 @@ namespace Chess
                 }
                 else if (distinguisher >= 'a' && distinguisher <= 'h')
                 {
-                    int column = (int)distinguisher - 97;
+                    int column = (int)distinguisher - 'a';
                     while (!Board.Contains(Engine.State.Moves[prev], next) || prev % 8 != column)
                     {
                         prev = BitOperations.TrailingZeroCount(pieces);

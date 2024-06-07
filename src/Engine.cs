@@ -37,7 +37,7 @@ namespace Chess
             public int PieceCount;
             public int Clock;
             public int FullMoves;
-            public int      EPTarget;
+            public int EPTarget;
             public int[]? CheckingPieces;
             public StatePackage()
             {
@@ -128,7 +128,7 @@ namespace Chess
             }
 
             int temp = Board.ToIndex(sections[3]);
-            if (temp != -1) State.EPTarget = temp;
+            State.EPTarget = temp;
             if (Pieces['K'].PieceCount != 2) throw new Exception();
             GeneratePseudos();
             if (sections.Length < 5) return;
@@ -343,7 +343,7 @@ namespace Chess
                     }
                 }
             }
-            return material[State.ActiveColor] - material[InactiveColor]; ;
+            return material[State.ActiveColor] - material[InactiveColor];
         }
         /// <summary>
         /// Make move;
@@ -431,7 +431,11 @@ namespace Chess
                 return false;
             }
 
-            if (type == 'K') Array.Clear(State.CastlingRights[State.ActiveColor]);
+            if (type == 'K')
+            {
+                State.CastlingRights[State.ActiveColor][0] = false;
+                State.CastlingRights[State.ActiveColor][1] = false;
+            }
             if (type == 'R')
             {
                 
@@ -485,10 +489,15 @@ namespace Chess
 
             log.StartingState.ActiveColor = State.ActiveColor;
             log.StartingState.EPTarget = State.EPTarget;
-            log.StartingState.CastlingRights = State.CastlingRights;
             log.StartingState.PieceCount = State.PieceCount;
+            log.StartingState.FullMoves = State.FullMoves;
+            log.StartingState.Clock = State.Clock;
 
             Array.Copy(State.Moves, log.StartingState.Moves, 64);
+            /*for (int i = 0; i < 2; i++)
+            {
+                for (int j = 0; j < 2; j++) log.StartingState.CastlingRights[i][j] = State.CastlingRights[i][j];
+            }*/
             Array.Copy(State.CastlingRights[0], log.StartingState.CastlingRights[0], 2);
             Array.Copy(State.CastlingRights[1], log.StartingState.CastlingRights[1], 2);
             History.Push(log);
@@ -499,7 +508,6 @@ namespace Chess
         /// </summary>
         public void UnMake ()
         {
-            
             MoveLog log = History.Pop();
             
             Board player = Players[log.StartingState.ActiveColor];
@@ -605,6 +613,10 @@ namespace Chess
             Console.WriteLine("The computer plays " + move);
             return true;
         }
+        public bool Make(MoveResult move)
+        {
+            return Make(move.PrevIndex, move.NextIndex);
+        }
 
         // MISCELLANEOUS FUNCTIONS FOR DEBUGGING AND EASY I/O //
         public void Print (bool flipped = false)
@@ -671,6 +683,11 @@ namespace Chess
             watch.Start();
             long nodes = PerftRecursive(depth);
             watch.Stop();
+
+            Console.WriteLine(GenerateFEN());
+
+            Console.WriteLine("Depth " + depth);
+
             Console.WriteLine(nodes.ToString() + " nodes");
 
             Console.WriteLine(watch.ElapsedMilliseconds.ToString() + " ms");
@@ -702,6 +719,7 @@ namespace Chess
                         long count = PerftRecursive(depth - 1);
                         nodes += count;
                         Console.WriteLine(count);
+                        Console.WriteLine(GenerateFEN());
                         UnMake();
                     }
                 }
@@ -773,8 +791,8 @@ namespace Chess
             }
 
             output = string.Concat(output.AsSpan(0, output.Length - 1), " ", State.ActiveColor == 0 ? "w" : "b", " "); ///*equivalent to:*/ output = output.Substring(0, output.Length - 1) + " " + (State.ActiveColor == 0 ? "w" : "b") + " ";
-            bool[] w = State.CastlingRights[State.ActiveColor];
-            bool[] b = State.CastlingRights[InactiveColor];
+            bool[] w = State.CastlingRights[0];
+            bool[] b = State.CastlingRights[1];
             
             if (w[0]) output += "K";
             if (w[1]) output += "Q";
@@ -785,18 +803,14 @@ namespace Chess
             
             if (State.EPTarget != -1) output += " " + Board.ToAlgNot((int)State.EPTarget) + " ";
             else output += " - ";
-            output += State.Clock + " " + State.FullMoves;
+            //output += State.Clock + " " + State.FullMoves;
             return output;
         }
         public bool Make (string prev, string next)
         {
-            Console.WriteLine("hi");
             return Make(Board.ToIndex(prev), Board.ToIndex(next));
         }
-        public bool Make (MoveResult move)
-        {
-            return Make(move.PrevIndex, move.NextIndex);
-        }
+        
         public void DumpInfo()
         {
             foreach (char type in PieceKeys)
