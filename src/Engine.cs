@@ -803,7 +803,7 @@ namespace Chess
             
             if (State.EPTarget != -1) output += " " + Board.ToAlgNot((int)State.EPTarget) + " ";
             else output += " - ";
-            //output += State.Clock + " " + State.FullMoves;
+            output += State.Clock + " " + State.FullMoves;
             return output;
         }
         public bool Make (string prev, string next)

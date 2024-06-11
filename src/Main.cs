@@ -39,7 +39,7 @@ namespace Chess
             }
             Console.Write("Enter 'b' or 'B' to play as black, 'w' or 'W' to play as white, or anything else for a random color: ");
             input = Console.ReadLine().ToLower();
-            if (input[0] != 'b' && input[0] != 'w')
+            if (input == "" || (input[0] != 'b' && input[0] != 'w'))
             {
                 input = flipped ? "b" : "w";
                 Console.WriteLine("You have the " + (flipped ? "black" : "white") + " pieces.");
@@ -70,7 +70,7 @@ namespace Chess
                 }
                 else
                 {
-                    game.Engine.Print(flipped);
+                    game.Engine.Print(true);
                     (int prev, int next) move;
                     if (game.Engine.Search(1) == null)
                     {
@@ -94,6 +94,7 @@ namespace Chess
                             Console.WriteLine("*dump: print the game info");
                             Console.WriteLine("*undo: undo your last move");
                             Console.WriteLine("*code: generate a FEN code representing the position");
+                            Console.WriteLine("*rset: reset the game");
                             continue;
                         }
                         if (input == "*undo")
@@ -121,6 +122,12 @@ namespace Chess
                         {
                             Console.WriteLine("\n" + game.Engine.GenerateFEN());
                             continue;
+                        }
+                        if (input == "*rset")
+                        {
+                            Console.Clear();
+                            Main();
+                            break;
                         }
                         if (input[^2] == '=')
                         {
