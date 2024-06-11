@@ -70,7 +70,7 @@ namespace Chess
                 }
                 else
                 {
-                    game.Engine.Print(true);
+                    game.Engine.Print(flipped);
                     (int prev, int next) move;
                     if (game.Engine.Search(1) == null)
                     {
