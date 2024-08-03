@@ -322,23 +322,23 @@ namespace Chess
                             break;
                         case 'P':
                             index = Players[0].Contains(square) ? 0 : 1;
-                            material[index] += PositionalWeights.Pawn[index][square] + 15 * BitOperations.PopCount(State.Moves[square]);
+                            material[index] += PositionalWeights.Pawn[index][square] + 2 * BitOperations.PopCount(State.Moves[square]);
                             break;
                         case 'N':
                             index = Players[0].Contains(square) ? 0 : 1;
-                            material[index] += PositionalWeights.Knight[square] + 10 * BitOperations.PopCount(State.Moves[square]);
+                            material[index] += PositionalWeights.Knight[square] + BitOperations.PopCount(State.Moves[square]);
                             break;
                         case 'B':
                             index = Players[0].Contains(square) ? 0 : 1;
-                            material[index] += PositionalWeights.Bishop[square] + 10 * BitOperations.PopCount(State.Moves[square]);
+                            material[index] += PositionalWeights.Bishop[square] + BitOperations.PopCount(State.Moves[square]);
                             break;
                         case 'R':
                             index = Players[0].Contains(square) ? 0 : 1;
-                            material[index] += PositionalWeights.Rook[square] + 10 * BitOperations.PopCount(State.Moves[square]);
+                            material[index] += PositionalWeights.Rook[square] + BitOperations.PopCount(State.Moves[square]);
                             break;
                         case 'Q':
                             index = Players[0].Contains(square) ? 0 : 1;
-                            material[index] += PositionalWeights.Queen[square] + 10 * BitOperations.PopCount(State.Moves[square]);
+                            material[index] += PositionalWeights.Queen[square] + BitOperations.PopCount(State.Moves[square]);
                             break;
                     }
                 }
@@ -476,7 +476,6 @@ namespace Chess
 
         public void Log (int prev, int next, char movingType, char targetType, char flag, char promotionType)
         {
-
             MoveLog log = new()
             {
                 MovingType = movingType,

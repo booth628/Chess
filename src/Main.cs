@@ -155,10 +155,11 @@ namespace Chess
             }
         }
         
-        /*public static void Debug()
+        public static void Debug()
         {
             Engine e = new();
-        }*/
+            
+        }
 
         readonly Engine Engine;
 
